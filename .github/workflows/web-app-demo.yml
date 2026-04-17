@@ -14,11 +14,16 @@ jobs:
         with:
           python-version: "3.10"
 
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install flask pytest pytest-flask bandit
 
-      - run: pytest -v
+      - name: Run tests
+        run: pytest -v
 
-      - run: bandit -r .
+      - name: Run security scan
+        run: bandit -r .
 
   docker-deploy:
     runs-on: ubuntu-latest
@@ -31,5 +36,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - run: docker build -t jadhusam/gp1-demo:latest .
-      - run: docker push jadhusam/gp1-demo:latest
+      - name: Build image
+        run: docker build -t jadhusam/gp1-demo:latest .
+
+      - name: Push image
+        run: docker push jadhusam/gp1-demo:latest
